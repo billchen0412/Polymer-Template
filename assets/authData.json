@@ -1,0 +1,45 @@
+{
+  "resultType": "SUCCESS",
+  "resultCd": "SUCCESS-0000",
+  "resultMsg": "SUCCESS",
+  "resultData": {
+    "userInfo": {
+      "en-US": "Bill Chen",
+      "zh-TW": "海王子"
+    },
+    "funcTree": [
+      {
+        "funcId": "00000001",
+        "authType": "ACCESS",
+        "childFuncs": [
+          {
+            "funcId": "00000005",
+            "authType": "ACCESS",
+            "childFuncs": [
+              {
+              "funcId": "00000006",
+              "authType": "ACCESS",
+              "childFuncs": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "funcId": "00000002",
+        "authType": "ACCESS",
+        "childFuncs": null
+      },
+      {
+        "funcId": "00000003",
+        "authType": "ACCESS",
+        "childFuncs": null
+      },
+      {
+        "funcId": "00000004",
+        "authType": "ACCESS",
+        "childFuncs": null
+      }
+    ]
+  }
+}

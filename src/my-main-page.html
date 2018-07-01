@@ -1,0 +1,228 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../assets/css/shared-styles.html">
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<!--<link rel="import" href="my-app.html">-->
+
+<dom-module id="my-main-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      div.loginPage {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-center-justified;
+        height: 100vh;
+        background-color: white;
+      }
+      div.loginBlock {
+        width: 300px;
+        height: 300px;
+        padding: 30px;
+        border-radius: 10px;
+        border: 3px outset grey;
+      }
+      div.section {
+        @apply --layout-horizontal;
+      }
+      div.section[right] {
+        text-align: right;
+      }
+      div.loginButton {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-center-justified;
+        height: 80px;
+      }
+      paper-button.main {
+        background-color: #4285f4;
+        color: white;
+        border-radius: 5px;
+      }
+    </style>
+    <iron-pages id="pgMain" selected="lytLogin" attr-for-selected="name">
+      <div name="lytLogin" class="loginPage">
+        <div class="loginBlock">
+          <h2>Sign in</h2>
+          <paper-input id="iptAccount" label="Account" auto-validate allowed-pattern="[0-9a-zA-Z]"
+          minlength="8" maxlength="20"></paper-input>
+          <paper-input id="iptPassword" label="Password" auto-validate allowed-pattern="[0-9a-zA-Z]"
+          minlength="8" maxlength="20" type="password"></paper-input>
+          <div class="loginButton">
+            <paper-button class="main" on-click="_onClickLogin">Login</paper-button>
+          </div>
+        </div>
+      </div>
+      <div name="lytMain">
+        <my-app func-tree="{{funcTree}}" func-name-map="{{funcNameMap}}" user-info="{{userInfo}}" language="{{language}}"></my-app>
+      </div>
+    </iron-pages>
+    <iron-ajax id="ajaxFuncNameMap" auto url="/assets/funcNameMap.json" handle-as="json" method="GET"
+    on-response="_onResponseFuncNameMap" on-error="_onErrorResponse"></iron-ajax>
+    <iron-ajax id="ajaxAuth" url="/assets/authData.json" handle-as="json" method="GET"
+    on-response="_onResponseAuth" on-error="_onErrorResponse"></iron-ajax>
+  </template>
+
+  <script>
+    // Gesture events like tap and track generated from touch will not be
+    // preventable, allowing for better scrolling performance.
+    Polymer.setPassiveTouchGestures(true);
+
+    class MyMainPage extends Polymer.Element {
+      static get is() { return 'my-main-page'; }
+
+      static get properties() {
+        return {
+          userInfo: {
+            type: Object,
+          },
+          funcTree: {
+            type: Object,
+          },
+          funcNameMap: {
+            type: Object,
+          },
+          expire_hours: {
+            type: Number,
+            value: 12,
+          },
+          language: {
+            type: String,
+            value: 'en-US',
+          },
+        };
+      }
+
+      static get observers() {
+      }
+
+      constructor() {
+        super();
+        console.log("created");
+      }
+      ready() {
+        super.ready();
+        console.log("ready");
+        this._checkLanguage();
+        this._checkCookie();
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        console.log("attached");
+      }
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        console.log("detached");
+      }
+
+      // event handler
+
+      _onClickLogin() {
+        // check account and password are valid
+        var body = {};
+        body['account'] = this.$.iptAccount;
+        body['password'] = this.$.iptPassword;
+        this.$.ajaxAuth.body = body;
+        this.$.ajaxAuth.generateRequest();
+      }
+      _onResponseFuncNameMap(event) {
+        // handle response of funcNameMap response
+        var response = event.detail.response;
+        if (response) {
+          this.funcNameMap = response;
+          this._switchNextPage();
+        }
+        else {
+          console.log('Error');
+        }
+      }
+      _onResponseAuth(event) {
+        // handle response of authentication response
+        var response = event.detail.response;
+        if (response) {
+          if (response.resultType === 'SUCCESS') {
+            this.userInfo = response.resultData.userInfo;
+            this.funcTree = response.resultData.funcTree;
+            this._setCookie('myCookie','1234567890');
+            this._switchNextPage();
+          }
+          else {
+            console.log(response.resultCd + ',' + response.resultMsg);
+          }
+        }
+        else {
+          console.log('Error');
+        }
+      }
+      _onErrorResponse() {
+        console.log('Error');
+      }
+
+      // business function
+      _getCookie(name) {
+        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        if (match) return match[2];
+      }
+      _setCookie(name, value) {
+        var d = new Date();
+        d.setTime(d.getTime() + (this.expire_hours * 60 * 60 * 1000));
+        var expires = 'expires=' + d.toGMTString();
+        var domain = 'domain=/';
+        var cookieStr = name + '=' + value + '; ' + expires + '; path=/;';
+        document.cookie = cookieStr;
+      }
+      _verifyCookie(cookie) {
+        // check cookie is valid or not
+        if (cookie) {
+          return true;
+        }
+      }
+      _checkLanguage() {
+        // check session storage has lanuguage or not
+        // otherwise save default language to session storage
+        var language = sessionStorage.getItem('language');
+        if (language) {
+          this.language = language;
+        }
+        else {
+          sessionStorage.setItem('language', this.language);
+        }
+      }
+      _checkCookie() {
+        // check user has cookie or not
+        var cookie = this._getCookie('myCookie');
+        if (this._verifyCookie(cookie)) {
+          this._switchNextPage();
+        }
+      }
+      _switchNextPage() {
+        // switch to main page
+        if (this.funcNameMap && this.funcTree) {
+          // Load page import on demand. Show 404 page if fails
+          const resolvedPageUrl = this.resolveUrl('my-app.html');
+          Polymer.importHref(
+              resolvedPageUrl,
+              null,
+              null,
+              true);
+          this.$.pgMain.selected = "lytMain";
+        }
+      }
+    }
+
+    window.customElements.define(MyMainPage.is, MyMainPage);
+  </script>
+</dom-module>

@@ -1,0 +1,58 @@
+{
+  "home": {
+    "en-US": "",
+    "zh-TW": "",
+    "url": "home",
+    "component": "my-home",
+    "componentPath": "my-home.html"
+  },
+  "00000001": {
+    "en-US": "Folder One",
+    "zh-TW": "子資料夾1",
+    "url": "",
+    "component": "",
+    "componentPath": ""
+  },
+  "00000002": {
+    "en-US": "View One",
+    "zh-TW": "子頁面1",
+    "url": "view1",
+    "component": "my-view1",
+    "componentPath": "my-view1.html"
+  },
+  "00000003": {
+    "en-US": "View Two",
+    "zh-TW": "子頁面2",
+    "url": "view2",
+    "component": "my-view2",
+    "componentPath": "my-view2.html"
+  },
+  "00000004": {
+    "en-US": "View Three",
+    "zh-TW": "子頁面3",
+    "url": "view3",
+    "component": "my-view3",
+    "componentPath": "my-view3.html"
+  },
+  "00000005": {
+    "en-US": "Folder Two",
+    "zh-TW": "子資料夾2",
+    "url": "",
+    "component": "",
+    "componentPath": ""
+  },
+  "00000006": {
+    "en-US": "View Four",
+    "zh-TW": "子頁面4",
+    "url": "view4",
+    "component": "my-view4",
+    "componentPath": "my-view4.html"
+  },
+  "99999999": {
+    "en-US": "Error 404",
+    "zh-TW": "頁面不存在",
+    "url": "view1",
+    "component": "my-view404",
+    "componentPath": "my-view404.html"
+  }
+}
